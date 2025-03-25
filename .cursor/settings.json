@@ -16,6 +16,16 @@
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": true,
     "editor.renderControlCharacters": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    
+    // Language-specific settings
+    "[shellscript]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
     
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
