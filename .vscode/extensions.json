@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "pkief.material-icon-theme",
+    "github.github-vscode-theme",
+    "eamodio.gitlens",
+    "christian-kohler.path-intellisense",
+    "streetsidesoftware.code-spell-checker",
+    "ms-azuretools.vscode-docker",
+    "github.copilot",
+    "github.copilot-chat",
+    "redhat.vscode-yaml",
+    "ms-python.python",
+    "ms-vscode-remote.remote-ssh",
+    "ms-vscode.remote-explorer",
+    "golang.go",
+    "vscodevim.vim",
+    "ms-vscode.live-server",
+    "vscode-icons-team.vscode-icons",
+    "hashicorp.terraform"
+  ]
+} 
