@@ -5,10 +5,22 @@ Personal dotfiles configuration for cross-machine synchronization.
 ## Contents
 
 - `.bashrc` - Bash shell configuration with aliases and functions
+  - Useful aliases for Git, Docker, and Kubernetes
+  - Secure shell functions for extraction, directory creation, process finding
+  - Improved command-v consistency for better portability
+  - Intelligent path handling and command completion
 - `.gitconfig` - Git configuration with user identity and useful aliases
-- `.gitignore_global` - Global gitignore file
+  - Default branch set to "main"
+  - URL rewriting for SSH connections to GitHub/GitLab
+  - Comprehensive aliases for common git workflows
+- `.gitignore_global` - Global gitignore file for common patterns
+- `.ssh/config` - SSH configuration with sensible defaults (keys not included)
 - `.vscode/` - VS Code settings and recommended extensions
+  - Auto-formatting on save
+  - ESLint integration
+  - Consistent code style settings
 - `.cursor/` - Cursor editor settings
+  - VS Code-compatible settings plus Cursor-specific AI features
 - `.config/nvim/` - Basic Neovim configuration for future use
 
 ## Installation
@@ -41,6 +53,29 @@ The installation script will:
 - Create backups of your existing dotfiles
 - Create symbolic links from the repository files to your home directory
 - Set up VS Code and Cursor settings if they're installed
+- Set proper permissions for SSH files
+
+## Features
+
+### Shell Enhancements
+- **Command completion** for common tools
+- **Extract function** - Handle various archive formats with a single command
+- **Improved process search** - Find processes by name without false positives
+- **Directory creation** - Make and change to a directory in one command
+- **Automatic SSH agent setup**
+
+### Editor Configuration
+- **VS Code & Cursor** - Consistent settings between editors including:
+  - Code formatting on save
+  - Syntax highlighting and bracket matching
+  - Theme and icon configuration
+  - Recommended extensions
+
+### Git Workflow
+- **Useful aliases** for common git commands
+- **Enhanced logging** with color and formatting
+- **SSH integration** with GitHub and GitLab
+- **Default settings** for pull, push, fetch behaviors
 
 ## Update
 
