@@ -21,6 +21,9 @@
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     
+    // WSL-specific settings
+    "remote.WSL.fileWatcher.polling": true,
+    
     // Language-specific settings
     "[shellscript]": {
         "editor.tabSize": 2,
