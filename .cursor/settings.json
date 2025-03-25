@@ -63,6 +63,25 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cursorStyle": "line",
     
+    "terminal.integrated.defaultProfile.windows": "WSL",
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.windows": {
+        "WSL": {
+            "path": "C:\\Windows\\System32\\wsl.exe",
+            "args": [],
+            "icon": "terminal-ubuntu"
+        },
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell",
+            "args": []
+        }
+    },
+    "terminal.integrated.automationProfile.windows": {
+        "path": "C:\\Windows\\System32\\wsl.exe"
+    },
+    "terminal.integrated.shellIntegration.enabled": true,
+    
     "breadcrumbs.enabled": true,
     "telemetry.telemetryLevel": "off",
     "update.mode": "manual",
