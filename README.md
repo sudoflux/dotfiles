@@ -23,7 +23,7 @@ git clone https://github.com/sudoflux/dotfiles.git ~/dotfiles
 
 ```bash
 cd ~/dotfiles
-./install.sh
+./install_dotfiles.sh
 ```
 
 The installation script will:
@@ -42,7 +42,7 @@ To update your dotfiles across machines:
 ```bash
 cd ~/dotfiles
 git pull
-./install.sh
+./install_dotfiles.sh
 ```
 
 ## Customization
