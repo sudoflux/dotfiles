@@ -1,0 +1,47 @@
+{
+    "recommendations": [
+        // WSL and Remote Development
+        "ms-vscode-remote.remote-wsl",
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.remote-server",
+        
+        // Development Tools
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "christian-kohler.path-intellisense",
+        "aaron-bond.better-comments",
+        
+        // Language Support
+        "redhat.vscode-yaml",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "golang.go",
+        "hashicorp.terraform",
+        "ms-vscode.powershell",
+        
+        // Themes and UI
+        "pkief.material-icon-theme",
+        "github.github-vscode-theme",
+        
+        // Productivity
+        "formulahendry.code-runner",
+        "gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "shardulm94.trailing-spaces",
+        
+        // Shell and Terminal
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        
+        // Markdown and Documentation
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-preview-github-styles",
+        
+        // Docker and Kubernetes
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-azuretools.vscode-docker"
+    ]
+} 

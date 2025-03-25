@@ -35,6 +35,10 @@ if [ -f "$dotfiles_dir/.ssh/config" ]; then
     mkdir -p "$HOME/.ssh"
     chmod 700 "$HOME/.ssh"
     
+    # Create SSH control directory for multiplexing
+    mkdir -p "$HOME/.ssh/control"
+    chmod 700 "$HOME/.ssh/control"
+    
     # Backup existing config
     if [ -f "$HOME/.ssh/config" ] || [ -L "$HOME/.ssh/config" ]; then
         echo "Backing up SSH config"
