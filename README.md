@@ -13,7 +13,9 @@ Personal dotfiles configuration for cross-machine synchronization.
 
 ## Installation
 
-1. Clone this repository to your home directory:
+### First-time Setup on a New Machine
+
+1. For the initial clone of this repository, use HTTPS (since SSH isn't configured yet):
 
 ```bash
 git clone https://github.com/sudoflux/dotfiles.git ~/dotfiles
@@ -24,6 +26,15 @@ git clone https://github.com/sudoflux/dotfiles.git ~/dotfiles
 ```bash
 cd ~/dotfiles
 ./install_dotfiles.sh
+```
+
+3. Set up your SSH keys for GitHub following the instructions in the [GitHub SSH Setup](#github-ssh-setup) section.
+
+4. After SSH is set up, you can optionally switch the repository's remote to use SSH:
+
+```bash
+cd ~/dotfiles
+git remote set-url origin git@github.com:sudoflux/dotfiles.git
 ```
 
 The installation script will:
