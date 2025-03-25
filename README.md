@@ -128,3 +128,61 @@ chmod 600 ~/.ssh/id_ed25519
 chmod 644 ~/.ssh/id_ed25519.pub
 chmod 600 ~/.ssh/config
 ```
+
+## GitHub SSH Setup
+
+Setting up SSH for GitHub repositories makes cloning, pushing, and pulling more secure and convenient by eliminating the need for password authentication.
+
+### Initial Setup
+
+1. Generate a GitHub-specific SSH key (if you don't have one already):
+
+```bash
+ssh-keygen -t ed25519 -C "jfletcherj86@gmail.com" -f ~/.ssh/github_ed25519
+```
+
+2. Add the key to your SSH agent:
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/github_ed25519
+```
+
+3. Add the public key to your GitHub account:
+   - Copy the public key to clipboard:
+     ```bash
+     cat ~/.ssh/github_ed25519.pub | xclip -selection clipboard
+     # On macOS: cat ~/.ssh/github_ed25519.pub | pbcopy
+     # Without clipboard tools: cat ~/.ssh/github_ed25519.pub
+     ```
+   - Go to GitHub → Settings → SSH and GPG keys → New SSH key
+   - Paste the key and give it a meaningful title (e.g., "Work Laptop 2025")
+   - Click "Add SSH key"
+
+4. Verify the connection:
+
+```bash
+ssh -T git@github.com
+```
+
+### Converting Repositories from HTTPS to SSH
+
+For existing repositories:
+
+```bash
+# Check current remote URL
+git remote -v
+
+# Change from HTTPS to SSH
+git remote set-url origin git@github.com:sudoflux/REPOSITORY.git
+```
+
+### Default to SSH for New Repositories
+
+Configure Git to automatically convert HTTPS GitHub URLs to SSH when adding remotes:
+
+```bash
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
+This configuration is already included in your dotfiles `.gitconfig`.
