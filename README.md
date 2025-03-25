@@ -84,7 +84,7 @@ Generate and manually transfer keys using secure methods:
 
 ```bash
 # Generate new SSH key on source machine
-ssh-keygen -t ed25519 -C "your_email@example.com"
+ssh-keygen -t ed25519 -C "jfletcherj86@gmail.com"
 
 # Secure copy to new machine (various options)
 # Option A: Direct secure copy if SSH is already set up
