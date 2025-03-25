@@ -302,9 +302,3 @@ chmod 644 ~/.ssh/id_ed25519.pub
 chmod 600 ~/.ssh/config
 ```
 </details>
-
----
-
-<div align="center">
-Created with ❤️ by <a href="https://github.com/sudoflux">sudoflux</a>
-</div>
