@@ -29,6 +29,25 @@ for file in $files; do
     ln -sf "$dotfiles_dir/$file" "$HOME/$file"
 done
 
+# Handle SSH config if it exists (only config file, not keys)
+if [ -f "$dotfiles_dir/.ssh/config" ]; then
+    # Ensure .ssh directory exists with proper permissions
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+    
+    # Backup existing config
+    if [ -f "$HOME/.ssh/config" ] || [ -L "$HOME/.ssh/config" ]; then
+        echo "Backing up SSH config"
+        mkdir -p "$backup_dir/$date_str/.ssh"
+        mv "$HOME/.ssh/config" "$backup_dir/$date_str/.ssh/"
+    fi
+    
+    # Create symlink
+    echo "Creating symlink to SSH config"
+    ln -sf "$dotfiles_dir/.ssh/config" "$HOME/.ssh/config"
+    chmod 600 "$HOME/.ssh/config"
+fi
+
 # Handle .config directory and its nested directories (like nvim)
 if [ -d "$dotfiles_dir/.config" ]; then
     # Ensure .config directory exists in home

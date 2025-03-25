@@ -73,3 +73,58 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 ```
 
 3. Open Neovim and run `:PlugInstall`
+
+## SSH Keys Management
+
+SSH keys should **never** be stored in git repositories for security reasons. Instead, here are recommended approaches for managing SSH keys across machines:
+
+### Option 1: Manual copy (Most secure)
+
+Generate and manually transfer keys using secure methods:
+
+```bash
+# Generate new SSH key on source machine
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+# Secure copy to new machine (various options)
+# Option A: Direct secure copy if SSH is already set up
+scp -P port ~/.ssh/id_ed25519* user@newmachine:~/.ssh/
+
+# Option B: Use a temporary encrypted archive
+tar czf - ~/.ssh | gpg -c > ssh_keys.tar.gz.gpg
+# Transfer file securely, then on new machine:
+gpg -d ssh_keys.tar.gz.gpg | tar xzf - -C ~
+# Delete the archive afterward
+```
+
+### Option 2: Password manager with encrypted notes
+
+Store your SSH keys in an encrypted note within a trusted password manager like Bitwarden, 1Password, or KeePassXC.
+
+### Option 3: Using ssh-copy-id
+
+If you already have SSH access to the new machine without keys:
+
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@newmachine
+```
+
+### SSH Config Tips
+
+Your SSH configuration can be safely stored in the dotfiles repo since it doesn't contain sensitive data:
+
+```bash
+# Create SSH config file if it doesn't exist
+mkdir -p ~/.ssh && touch ~/.ssh/config && chmod 600 ~/.ssh/config
+
+# Add it to the dotfiles (excluded from repository by default)
+# If you want to include it, modify install_dotfiles.sh
+```
+
+Remember to always set proper permissions on SSH files:
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519 
+chmod 644 ~/.ssh/id_ed25519.pub
+chmod 600 ~/.ssh/config
+```
