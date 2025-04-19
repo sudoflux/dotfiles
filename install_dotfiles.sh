@@ -150,12 +150,6 @@ if [ -f "$fonts_txt" ]; then
   fc-cache -fv > /dev/null || true
 fi
 
-# Ensure Node.js is installed (for Copilot)
-if ! command -v node &>/dev/null; then
-  echo "Installing Node.js (required for GitHub Copilot)..."
-  sudo apt-get update && sudo apt-get install -y nodejs npm
-fi
-
 # Final message
 echo "Dotfiles installation complete!"
 echo "Backup of original files created at: $backup_dir/$date_str"
