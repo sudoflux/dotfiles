@@ -25,7 +25,7 @@ for file in "${files[@]}"; do
   fi
   echo "Creating symlink to $file"
   ln -sf "$dotfiles_dir/$file" "$HOME/$file"
-fi
+done
 
 # Handle SSH config if it exists
 if [ -f "$dotfiles_dir/.ssh/config" ]; then
