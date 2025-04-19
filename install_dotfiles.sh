@@ -74,6 +74,14 @@ if [ -d "$dotfiles_dir/.config" ]; then
     done
 fi
 
+# Neovim: Headless Plugin Sync
+if command -v nvim &>/dev/null; then
+    echo "Running Neovim headless to install plugins..."
+    nvim --headless "+Lazy! sync" +qa
+else
+    echo "Neovim not found — skipping plugin installation"
+fi
+
 # Handle VS Code settings
 if [ -d "$dotfiles_dir/.vscode" ]; then
     # Get VS Code settings directory path based on OS
