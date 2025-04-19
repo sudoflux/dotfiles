@@ -1,12 +1,9 @@
--- GitHub Copilot plugin config
--- Note: Node.js must be installed before this runs (handled in bootstrap)
-
+-- lua/config/plugins/copilot.lua
 return {
   "github/copilot.vim",
   config = function()
-    -- Optional settings:
-    -- vim.g.copilot_no_tab_map = true
-    -- vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { expr = true, silent = true, noremap = true })
+    -- Copilot settings (if any)
+    vim.g.copilot_no_tab_map = true
+    vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
   end,
-  event = "InsertEnter"
 }

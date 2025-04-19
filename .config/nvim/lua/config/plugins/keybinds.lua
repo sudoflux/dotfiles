@@ -1,74 +1,67 @@
--- Keybindings configuration
+-- lua/config/plugins/keybinds.lua
+print("Loading keybinds.lua") -- Debug statement to confirm loading
+
 return {
   "folke/which-key.nvim",
-  lazy = false, -- Load immediately
+  lazy = false,
   config = function()
-    -- Leader keys are set in init.lua before lazy loads plugins
-
     local wk = require("which-key")
-    wk.setup() -- Basic setup
+    wk.setup({})
 
-    -- Define mappings without the prefix, using dictionary style
-    local mappings = {
-      b = { name = "+Buffer" }, -- Group definition
-      bd = { "<cmd>bd<cr>", "Delete Buffer" },
-      bn = { "<cmd>bn<cr>", "Next Buffer" },
-      bp = { "<cmd>bp<cr>", "Previous Buffer" },
+    -- Define all leader mappings using the new spec
+    wk.register({
+      -- Buffer mappings
+      ["<leader>bd"] = { "<cmd>bd<cr>", desc = "Delete Buffer" },
+      ["<leader>bn"] = { "<cmd>bn<cr>", desc = "Next Buffer" },
+      ["<leader>bp"] = { "<cmd>bp<cr>", desc = "Previous Buffer" },
+      ["<leader>b"] = { group = "buffer" },
 
-      e = { "<cmd>NvimTreeToggle<cr>", "Toggle File Explorer" },
+      -- File explorer
+      ["<leader>e"] = { "<cmd>NvimTreeToggle<cr>", desc = "Toggle File Explorer" },
 
-      f = { name = "+File" },
-      fb = { "<cmd>Telescope buffers<cr>", "Buffers" },
-      ff = { "<cmd>Telescope find_files<cr>", "Find File" },
-      fg = { "<cmd>Telescope live_grep<cr>", "Live Grep" },
-      fr = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
+      -- File mappings (Telescope)
+      ["<leader>fb"] = { "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+      ["<leader>ff"] = { "<cmd>Telescope find_files<cr>", desc = "Find File" },
+      ["<leader>fg"] = { "<cmd>Telescope live_grep<cr>", desc = "Live Grep" },
+      ["<leader>fr"] = { "<cmd>Telescope oldfiles<cr>", desc = "Recent Files" },
+      ["<leader>f"] = { group = "file" },
 
-      g = { name = "+Git" },
-      gb = { "<cmd>Telescope git_branches<cr>", "Git Branches" },
-      gC = { "<cmd>Telescope git_commits<cr>", "Git Commits" }, -- Changed from gc to gC
-      gd = { "<cmd>Gitsigns diffthis<cr>", "Git Diff" },
-      gs = { "<cmd>Telescope git_status<cr>", "Git Status" },
+      -- Git mappings (Telescope and Gitsigns)
+      ["<leader>gC"] = { "<cmd>Telescope git_commits<cr>", desc = "Git Commits" },
+      ["<leader>gb"] = { "<cmd>Telescope git_branches<cr>", desc = "Git Branches" },
+      ["<leader>gd"] = { "<cmd>Gitsigns diffthis<cr>", desc = "Git Diff" },
+      ["<leader>gs"] = { "<cmd>Telescope git_status<cr>", desc = "Git Status" },
+      ["<leader>g"] = { group = "git" },
 
-      l = { name = "+LSP" },
-      lD = { "<cmd>lua vim.lsp.buf.declaration()<cr>", "Go to Declaration" },
-      lR = { "<cmd>lua vim.lsp.buf.rename()<cr>", "Rename Symbol" },
-      la = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code Action" },
-      ld = { "<cmd>lua vim.lsp.buf.definition()<cr>", "Go to Definition" },
-      lf = { "<cmd>lua vim.lsp.buf.format()<cr>", "Format Code" },
-      lh = { "<cmd>lua vim.lsp.buf.hover()<cr>", "Hover Documentation" },
-      li = { "<cmd>lua vim.lsp.buf.implementation()<cr>", "Go to Implementation" },
-      lr = { "<cmd>lua vim.lsp.buf.references()<cr>", "Find References" },
+      -- LSP mappings
+      ["<leader>lD"] = { function() vim.lsp.buf.declaration() end, desc = "Go to Declaration" },
+      ["<leader>lR"] = { function() vim.lsp.buf.rename() end, desc = "Rename Symbol" },
+      ["<leader>la"] = { function() vim.lsp.buf.code_action() end, desc = "Code Action" },
+      ["<leader>ld"] = { function() vim.lsp.buf.definition() end, desc = "Go to Definition" },
+      ["<leader>lf"] = { function() vim.lsp.buf.format() end, desc = "Format Code" },
+      ["<leader>lh"] = { function() vim.lsp.buf.hover() end, desc = "Hover Documentation" },
+      ["<leader>li"] = { function() vim.lsp.buf.implementation() end, desc = "Go to Implementation" },
+      ["<leader>lr"] = { function() vim.lsp.buf.references() end, desc = "Find References" },
+      ["<leader>l"] = { group = "lsp" },
 
-      q = { "<cmd>q<cr>", "Quit" },
-      w = { "<cmd>w<cr>", "Save" },
-    }
+      -- Quit and save
+      ["<leader>q"] = { "<cmd>q<cr>", desc = "Quit" },
+      ["<leader>w"] = { "<cmd>w<cr>", desc = "Save" },
+    })
 
-    -- Define options, including the prefix
-    local opts = {
-      prefix = "<leader>",
-      mode = "n", -- specify normal mode
-    }
-
-    -- Register the mappings with the options
-    wk.register(mappings, opts)
-
-    -- Non-leader keymaps
+    -- Non-leader keybindings using vim.keymap.set
     local keymap = vim.keymap.set
-    -- Easy window navigation
     keymap("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
     keymap("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
     keymap("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
     keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
-    -- Better indenting
     keymap("v", "<", "<gv", { desc = "Indent left" })
     keymap("v", ">", ">gv", { desc = "Indent right" })
 
-    -- Move selected lines
     keymap("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
     keymap("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
-    -- Center search results
     keymap("n", "n", "nzz", { desc = "Next search result (centered)" })
     keymap("n", "N", "Nzz", { desc = "Previous search result (centered)" })
   end,
