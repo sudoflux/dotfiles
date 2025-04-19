@@ -25,6 +25,8 @@ for file in "${files[@]}"; do
   fi
   echo "Creating symlink to $file"
   ln -sf "$dotfiles_dir/$file" "$HOME/$file"
+Done
+
 done
 
 # Handle SSH config if it exists
@@ -43,71 +45,6 @@ if [ -f "$dotfiles_dir/.ssh/config" ]; then
   echo "Creating symlink to SSH config"
   ln -sf "$dotfiles_dir/.ssh/config" "$HOME/.ssh/config"
   chmod 600 "$HOME/.ssh/config"
-fi
-
-# Scaffold Neovim config if missing
-nvim_config="$dotfiles_dir/.config/nvim"
-if [ ! -f "$nvim_config/init.lua" ]; then
-  echo "Scaffolding Neovim config..."
-  mkdir -p "$nvim_config/lua/config/plugins"
-  echo 'require("config.lazy")' > "$nvim_config/init.lua"
-  cat <<EOF > "$nvim_config/lua/config/lazy.lua"
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", lazypath })
-end
-vim.opt.rtp:prepend(lazypath)
-require("lazy").setup({
-  { import = "config.plugins" }
-})
-EOF
-  for plugin in cmp.lua lsp.lua treesitter.lua lualine.lua telescope.lua gitsigns.lua nvimtree.lua conform.lua copilot.lua theme.lua font.lua; do
-    plugin_path="$nvim_config/lua/config/plugins/$plugin"
-    if [ ! -f "$plugin_path" ]; then
-      touch "$plugin_path"
-    fi
-  done
-
-  # Add default content to key plugin files
-  cat <<EOF > "$nvim_config/lua/config/plugins/copilot.lua"
-return {
-  "zbirenbaum/copilot.lua",
-  cmd = "Copilot",
-  event = "InsertEnter",
-  config = function()
-    require("copilot").setup({
-      suggestion = { enabled = true },
-      panel = { enabled = false },
-    })
-  end,
-}
-EOF
-
-  cat <<EOF > "$nvim_config/lua/config/plugins/theme.lua"
-return {
-  "catppuccin/nvim",
-  name = "catppuccin",
-  priority = 1000,
-  config = function()
-    vim.cmd.colorscheme("catppuccin")
-  end,
-}
-EOF
-
-  cat <<EOF > "$nvim_config/lua/config/plugins/font.lua"
-vim.opt.guifont = "JetBrainsMono Nerd Font:h14"
-EOF
-fi
-
-# Ensure nerd-fonts.txt exists with at least one font
-fonts_dir="$dotfiles_dir/fonts"
-mkdir -p "$fonts_dir"
-fonts_txt="$fonts_dir/nerd-fonts.txt"
-if [ ! -f "$fonts_txt" ]; then
-  echo "Creating default nerd-fonts.txt with JetBrainsMono"
-  cat <<EOF > "$fonts_txt"
-https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-EOF
 fi
 
 # Remove conflicting init.vim
@@ -184,20 +121,30 @@ if [ -d "$dotfiles_dir/.cursor" ]; then
   fi
 fi
 
+# Ensure nerd-fonts.txt exists with at least one font
+fonts_dir="$dotfiles_dir/fonts"
+mkdir -p "$fonts_dir"
+fonts_txt="$fonts_dir/nerd-fonts.txt"
+if [ ! -f "$fonts_txt" ]; then
+  echo "Creating default nerd-fonts.txt with JetBrainsMono"
+  cat <<EOF > "$fonts_txt"
+https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+EOF
+fi
+
 # Install Nerd Fonts from nerd-fonts.txt (idempotent)
 if [ -f "$fonts_txt" ]; then
   echo "Installing Nerd Fonts..."
   mkdir -p "$HOME/.local/share/fonts"
   while IFS= read -r font_url; do
     font_zip_name=$(basename "$font_url")
-    zip_path="$HOME/.local/share/fonts/$font_zip_name"
     extract_path="$HOME/.local/share/fonts/${font_zip_name%.zip}"
     if [ ! -d "$extract_path" ]; then
       echo "  Downloading $font_zip_name"
-      curl -Lo "$zip_path" "$font_url"
+      curl -Lo "$HOME/.local/share/fonts/$font_zip_name" "$font_url"
       echo "  Extracting $font_zip_name"
-      unzip -o "$zip_path" -d "$extract_path" > /dev/null
-      rm "$zip_path"
+      unzip -o "$HOME/.local/share/fonts/$font_zip_name" -d "$extract_path" > /dev/null || true
+      rm "$HOME/.local/share/fonts/$font_zip_name"
     else
       echo "  Skipping $font_zip_name (already extracted)"
     fi
