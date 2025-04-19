@@ -3,179 +3,132 @@
 # Dotfiles installation script
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
 
+set -e
+
 # Variables
 dotfiles_dir="$HOME/dotfiles"
 backup_dir="$HOME/.dotfiles_backup"
 date_str=$(date +%Y%m%d_%H%M%S)
 
 # List of files/folders to symlink in homedir
-files=".bashrc .gitconfig .gitignore_global"
-config_dirs=".config .vscode .cursor"
+files=(.bashrc .gitconfig .gitignore_global)
 
 # Create backup directory
 echo "Creating backup directory: $backup_dir/$date_str"
 mkdir -p "$backup_dir/$date_str"
 
 # Backup and create symlinks for regular dotfiles
-for file in $files; do
-  # Backup existing file
-  if [ -f "$HOME/$file" ] || [ -L "$HOME/$file" ]; then
+for file in "${files[@]}"; do
+  if [ -e "$HOME/$file" ]; then
     echo "Backing up $file"
     mv "$HOME/$file" "$backup_dir/$date_str/"
   fi
-
-  # Create symlink
   echo "Creating symlink to $file"
   ln -sf "$dotfiles_dir/$file" "$HOME/$file"
-done
+fi
 
-# Handle SSH config if it exists (only config file, not keys)
+# Handle SSH config if it exists
 if [ -f "$dotfiles_dir/.ssh/config" ]; then
-  # Ensure .ssh directory exists with proper permissions
   mkdir -p "$HOME/.ssh"
   chmod 700 "$HOME/.ssh"
-
-  # Create SSH control directory for multiplexing
   mkdir -p "$HOME/.ssh/control"
   chmod 700 "$HOME/.ssh/control"
 
-  # Backup existing config
-  if [ -f "$HOME/.ssh/config" ] || [ -L "$HOME/.ssh/config" ]; then
+  if [ -e "$HOME/.ssh/config" ]; then
     echo "Backing up SSH config"
     mkdir -p "$backup_dir/$date_str/.ssh"
     mv "$HOME/.ssh/config" "$backup_dir/$date_str/.ssh/"
   fi
 
-  # Create symlink
   echo "Creating symlink to SSH config"
   ln -sf "$dotfiles_dir/.ssh/config" "$HOME/.ssh/config"
   chmod 600 "$HOME/.ssh/config"
 fi
 
-# Handle .config directory and its nested directories (like nvim)
+# Scaffold Neovim config if missing
+nvim_config="$dotfiles_dir/.config/nvim"
+if [ ! -f "$nvim_config/init.lua" ]; then
+  echo "Scaffolding Neovim config..."
+  mkdir -p "$nvim_config/lua/config/plugins"
+  echo 'require("config.lazy")' > "$nvim_config/init.lua"
+  cat <<EOF > "$nvim_config/lua/config/lazy.lua"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", lazypath })
+end
+vim.opt.rtp:prepend(lazypath)
+require("lazy").setup({ { import = "config.plugins" } })
+EOF
+  for plugin in cmp.lua lsp.lua treesitter.lua lualine.lua telescope.lua gitsigns.lua nvimtree.lua conform.lua; do
+    touch "$nvim_config/lua/config/plugins/$plugin"
+  done
+fi
+
+# Symlink all .config directories
 if [ -d "$dotfiles_dir/.config" ]; then
-  # Ensure .config directory exists in home
   mkdir -p "$HOME/.config"
-
-  # Loop through subdirectories in dotfiles/.config
-  for dir in $(find "$dotfiles_dir/.config" -mindepth 1 -maxdepth 1 -type d); do
+  for dir in "$dotfiles_dir/.config"/*; do
     dir_name=$(basename "$dir")
-
-    # Backup existing directory
-    if [ -d "$HOME/.config/$dir_name" ] || [ -L "$HOME/.config/$dir_name" ]; then
+    if [ -e "$HOME/.config/$dir_name" ]; then
       echo "Backing up .config/$dir_name"
       mkdir -p "$backup_dir/$date_str/.config"
       mv "$HOME/.config/$dir_name" "$backup_dir/$date_str/.config/"
     fi
-
-    # Create symlink
     echo "Creating symlink to .config/$dir_name"
-    ln -sf "$dotfiles_dir/.config/$dir_name" "$HOME/.config/$dir_name"
+    ln -sf "$dir" "$HOME/.config/$dir_name"
   done
 fi
 
-# Ensure lua config directory exists and is symlinked
-if [ -d "$dotfiles_dir/.config/nvim/lua" ]; then
-  mkdir -p "$HOME/.config/nvim"
-
-  if [ -d "$HOME/.config/nvim/lua" ] || [ -L "$HOME/.config/nvim/lua" ]; then
-    echo "Backing up existing Neovim lua/ directory"
-    mkdir -p "$backup_dir/$date_str/.config/nvim"
-    mv "$HOME/.config/nvim/lua" "$backup_dir/$date_str/.config/nvim/"
-  fi
-
-  echo "Creating symlink to .config/nvim/lua"
-  ln -sf "$dotfiles_dir/.config/nvim/lua" "$HOME/.config/nvim/lua"
-fi
-
-# Neovim: Headless Plugin Sync
+# Run Lazy sync if Neovim is installed
 if command -v nvim &>/dev/null; then
-  echo "Running Neovim headless to install plugins..."
+  echo "Running Neovim headless to sync plugins..."
   nvim --headless "+Lazy! sync" +qa
-else
-  echo "Neovim not found — skipping plugin installation"
 fi
 
-# Handle VS Code settings
+# VS Code settings
 if [ -d "$dotfiles_dir/.vscode" ]; then
-  # Get VS Code settings directory path based on OS
   case "$(uname)" in
-    "Darwin")
-    vscode_dir="$HOME/Library/Application Support/Code/User"
-    ;;
-    "Linux")
-    vscode_dir="$HOME/.config/Code/User"
-    ;;
-    "MINGW"*|"MSYS"*|"CYGWIN"*)
-    vscode_dir="$APPDATA/Code/User"
-    ;;
-  *)
-    echo "Unsupported OS for VS Code settings"
-    vscode_dir=""
-    ;;
+    Darwin) vscode_user="$HOME/Library/Application Support/Code/User" ;;
+    Linux) vscode_user="$HOME/.config/Code/User" ;;
+    MINGW*|MSYS*|CYGWIN*) vscode_user="$APPDATA/Code/User" ;;
+    *) vscode_user="" ;;
   esac
-
-  # If VS Code directory exists, create symlinks
-  if [ -n "$vscode_dir" ] && [ -d "$vscode_dir" ]; then
+  if [ -n "$vscode_user" ] && [ -d "$vscode_user" ]; then
     for file in "$dotfiles_dir/.vscode"/*; do
       file_name=$(basename "$file")
-
-      # Backup existing file
-      if [ -f "$vscode_dir/$file_name" ] || [ -L "$vscode_dir/$file_name" ]; then
-        echo "Backing up VS Code $file_name"
+      if [ -e "$vscode_user/$file_name" ]; then
         mkdir -p "$backup_dir/$date_str/vscode"
-        mv "$vscode_dir/$file_name" "$backup_dir/$date_str/vscode/"
+        mv "$vscode_user/$file_name" "$backup_dir/$date_str/vscode/"
       fi
-
-      # Create symlink
       echo "Creating symlink to VS Code $file_name"
-      ln -sf "$file" "$vscode_dir/$file_name"
+      ln -sf "$file" "$vscode_user/$file_name"
     done
   else
-    echo "VS Code doesn't appear to be installed. Skipping VS Code configurations."
+    echo "VS Code not detected. Skipping."
   fi
 fi
 
-# Handle Cursor settings
+# Cursor settings
 if [ -d "$dotfiles_dir/.cursor" ]; then
-  # Get Cursor settings directory path based on OS
   case "$(uname)" in
-    "Darwin")
-      cursor_dir="$HOME/Library/Application Support/Cursor/User"
-      ;;
-    "Linux")
-      cursor_dir="$HOME/.config/Cursor/User"
-      ;;
-    "MINGW"*|"MSYS"*|"CYGWIN"*)
-      cursor_dir="$APPDATA/Cursor/User"
-      ;;
-    *)
-      echo "Unsupported OS for Cursor settings"
-      cursor_dir=""
-      ;;
+    Darwin) cursor_user="$HOME/Library/Application Support/Cursor/User" ;;
+    Linux) cursor_user="$HOME/.config/Cursor/User" ;;
+    MINGW*|MSYS*|CYGWIN*) cursor_user="$APPDATA/Cursor/User" ;;
+    *) cursor_user="" ;;
   esac
-
-  # If Cursor directory exists, create symlinks
-  if [ -n "$cursor_dir" ]; then
-    # Create directory if it doesn't exist
-    mkdir -p "$cursor_dir"
-
+  if [ -n "$cursor_user" ]; then
+    mkdir -p "$cursor_user"
     for file in "$dotfiles_dir/.cursor"/*; do
       file_name=$(basename "$file")
-
-      # Backup existing file
-      if [ -f "$cursor_dir/$file_name" ] || [ -L "$cursor_dir/$file_name" ]; then
-        echo "Backing up Cursor $file_name"
+      if [ -e "$cursor_user/$file_name" ]; then
         mkdir -p "$backup_dir/$date_str/cursor"
-        mv "$cursor_dir/$file_name" "$backup_dir/$date_str/cursor/"
+        mv "$cursor_user/$file_name" "$backup_dir/$date_str/cursor/"
       fi
-
-      # Create symlink
       echo "Creating symlink to Cursor $file_name"
-      ln -sf "$file" "$cursor_dir/$file_name"
+      ln -sf "$file" "$cursor_user/$file_name"
     done
   else
-    echo "Could not determine Cursor settings location. Skipping Cursor configurations."
+    echo "Cursor path not found. Skipping."
   fi
 fi
 
