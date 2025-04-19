@@ -25,8 +25,6 @@ for file in "${files[@]}"; do
   fi
   echo "Creating symlink to $file"
   ln -sf "$dotfiles_dir/$file" "$HOME/$file"
-Done
-
 done
 
 # Handle SSH config if it exists
@@ -44,7 +42,7 @@ if [ -f "$dotfiles_dir/.ssh/config" ]; then
 
   echo "Creating symlink to SSH config"
   ln -sf "$dotfiles_dir/.ssh/config" "$HOME/.ssh/config"
-  chmod 600 "$HOME/.ssh/config"
+  [ -f "$dotfiles_dir/.ssh/config" ] && chmod 600 "$HOME/.ssh/config"
 fi
 
 # Remove conflicting init.vim
