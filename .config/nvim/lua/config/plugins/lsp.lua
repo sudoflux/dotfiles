@@ -2,7 +2,7 @@ return {
   "neovim/nvim-lspconfig",
   dependencies = {
     "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim"
+    "williamboman/mason-lspconfig.nvim",
   },
   config = function()
     require("mason").setup()
@@ -11,10 +11,10 @@ return {
     })
 
     local lspconfig = require("lspconfig")
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    local caps      = require("cmp_nvim_lsp").default_capabilities()
 
-    lspconfig.lua_ls.setup({ capabilities = capabilities })
-    lspconfig.bashls.setup({ capabilities = capabilities })
-    lspconfig.pyright.setup({ capabilities = capabilities })
-  end
+    lspconfig.lua_ls.setup({ capabilities = caps })
+    lspconfig.bashls.setup({ capabilities = caps })
+    lspconfig.pyright.setup({ capabilities = caps })
+  end,
 }
