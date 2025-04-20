@@ -95,6 +95,81 @@ if [ -d "$dotfiles_dir/.vscode" ]; then
   fi
 fi
 
+# Install Neovim dependencies for snacks.nvim
+if command -v nvim &>/dev/null; then
+  echo "Installing Neovim dependencies for snacks.nvim..."
+
+  # Detect package manager
+  if command -v apt &>/dev/null; then
+    PKG_MANAGER="apt"
+    INSTALL_CMD="sudo apt install -y"
+  elif command -v dnf &>/dev/null; then
+    PKG_MANAGER="dnf"
+    INSTALL_CMD="sudo dnf install -y"
+  elif command -v pacman &>/dev/null; then
+    PKG_MANAGER="pacman"
+    INSTALL_CMD="sudo pacman -S --noconfirm"
+  elif command -v brew &>/dev/null; then
+    PKG_MANAGER="brew"
+    INSTALL_CMD="brew install"
+  else
+    echo "Unsupported package manager. Please install dependencies manually."
+    PKG_MANAGER=""
+    INSTALL_CMD=""
+  fi
+
+  if [ -n "$PKG_MANAGER" ]; then
+    # Essential dependencies (excluding ripgrep which is installed in your bootstrap)
+    echo "Installing essential dependencies..."
+    case "$PKG_MANAGER" in
+      apt)
+        $INSTALL_CMD fd-find lazygit
+        ;;
+      dnf)
+        $INSTALL_CMD fd-find lazygit
+        ;;
+      pacman)
+        $INSTALL_CMD fd lazygit
+        ;;
+      brew)
+        $INSTALL_CMD fd lazygit
+        ;;
+    esac
+
+    # Ask about optional dependencies
+    read -p "Install optional dependencies for image/PDF/LaTeX support? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "Installing optional dependencies..."
+      case "$PKG_MANAGER" in
+        apt)
+          $INSTALL_CMD imagemagick ghostscript texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+          ;;
+        dnf)
+          $INSTALL_CMD ImageMagick ghostscript texlive-scheme-basic texlive-collection-fontsrecommended texlive-collection-latexextra
+          ;;
+        pacman)
+          $INSTALL_CMD imagemagick ghostscript texlive-most
+          ;;
+        brew)
+          $INSTALL_CMD imagemagick ghostscript basictex
+          ;;
+      esac
+
+      # Install tectonic (modern LaTeX compiler) using cargo
+      if command -v cargo &>/dev/null; then
+        echo "Installing tectonic via cargo..."
+        cargo install tectonic
+      else
+        echo "cargo not found. Skipping tectonic installation."
+        echo "To install tectonic later, first install cargo (Rust), then run: cargo install tectonic"
+      fi
+    else
+      echo "Skipping optional dependencies."
+    fi
+  fi
+fi
+
 # Cursor settings
 if [ -d "$dotfiles_dir/.cursor" ]; then
   case "$(uname)" in
