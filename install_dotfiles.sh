@@ -121,36 +121,6 @@ if [ -d "$dotfiles_dir/.cursor" ]; then
   fi
 fi
 
-# Ensure nerd-fonts.txt exists with at least one font
-fonts_dir="$dotfiles_dir/fonts"
-mkdir -p "$fonts_dir"
-fonts_txt="$fonts_dir/nerd-fonts.txt"
-if [ ! -f "$fonts_txt" ]; then
-  echo "Creating default nerd-fonts.txt with JetBrainsMono"
-  cat <<EOF > "$fonts_txt"
-https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-EOF
-fi
-
-# Install Nerd Fonts from nerd-fonts.txt (idempotent)
-if [ -f "$fonts_txt" ]; then
-  echo "Installing Nerd Fonts..."
-  mkdir -p "$HOME/.local/share/fonts"
-  while IFS= read -r font_url; do
-    font_zip_name=$(basename "$font_url")
-    extract_path="$HOME/.local/share/fonts/${font_zip_name%.zip}"
-    if [ ! -d "$extract_path" ]; then
-      echo "  Downloading $font_zip_name"
-      curl -Lo "$HOME/.local/share/fonts/$font_zip_name" "$font_url"
-      echo "  Extracting $font_zip_name"
-      unzip -o "$HOME/.local/share/fonts/$font_zip_name" -d "$extract_path" > /dev/null || true
-      rm "$HOME/.local/share/fonts/$font_zip_name"
-    else
-      echo "  Skipping $font_zip_name (already extracted)"
-    fi
-  done < "$fonts_txt"
-  fc-cache -fv > /dev/null || true
-fi
 
 # Final message
 echo "Dotfiles installation complete!"
