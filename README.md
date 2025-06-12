@@ -6,10 +6,9 @@
 ![Git](https://img.shields.io/badge/Git-Configuration-F05032?logo=git&logoColor=white)
 ![VSCode](https://img.shields.io/badge/Editor-VS_Code-007ACC?logo=visual-studio-code&logoColor=white)
 ![Cursor](https://img.shields.io/badge/Editor-Cursor-007ACC?logo=cursor&logoColor=white)
-![Neovim](https://img.shields.io/badge/Editor-Neovim-57A143?logo=neovim&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-**Personal dotfiles configuration for cross-machine synchronization**
+**Minimal dotfiles configuration for cross-machine synchronization**
 
 </div>
 
@@ -59,10 +58,6 @@
     <td><b>📁 .cursor/</b></td>
     <td>VS Code-compatible settings plus Cursor-specific AI features</td>
   </tr>
-  <tr>
-    <td><b>📁 .config/nvim/</b></td>
-    <td>Basic Neovim configuration for future use</td>
-  </tr>
 </table>
 
 ## 🚀 Installation
@@ -92,6 +87,7 @@ The installation script will:
 - 🔗 Create symbolic links from the repository files to your home directory
 - ⚙️ Set up VS Code and Cursor settings if they're installed
 - 🔐 Set proper permissions for SSH files
+- 🖥️ Install Nerd Fonts for terminal use
 </details>
 
 <details>
@@ -225,20 +221,6 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 
 This configuration is already included in your dotfiles `.gitconfig`.
 </details>
-
-## 🌌 Neovim Setup (Future)
-
-The basic Neovim configuration is included for future use. To enhance it:
-
-1. Uncomment the plugin section in `.config/nvim/init.vim`
-2. Install a plugin manager like vim-plug:
-
-```bash
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-```
-
-3. Open Neovim and run `:PlugInstall`
 
 ## 🔒 SSH Keys Management
 
